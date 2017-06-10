@@ -19,6 +19,7 @@
 ## Tooling Service
 * Functions
   * run(String name) -> JSON Result
+  * getPropertyMap() -> JSON PropertyMap
 
 ## WebApp
 * PRTA button is clicked
