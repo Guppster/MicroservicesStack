@@ -1,4 +1,4 @@
-#Functional Requirements
+# Functional Requirements
 
 ## Core
 * Variables
