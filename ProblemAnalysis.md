@@ -34,3 +34,6 @@
 
 * Every tool will have a set of API endpoints that clearly define that tool's usage.
 
+* One required endpoint will be getPropertyMapping() that returns an empty JSON object specifying required properties
+  * Although properties will be stored centrally, no one other than the tool itself will know which properties are required. (reduces code duplication and cleans up the flow of data)
+
