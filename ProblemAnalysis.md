@@ -33,4 +33,8 @@
   * Using a series of HTTP methods (GET, PUT, POST, DELETE...) anything can use a tool
 
 * Every tool will have a set of API endpoints that clearly define that tool's usage.
+  * We could have one tool written in Java, another written in Python and they could both work well together using each other's endpoints
+
+* One required endpoint will be getPropertyMapping() that returns an empty JSON object specifying required properties
+  * Although properties will be stored centrally, no one other than the tool itself will know which properties are required. (reduces code duplication and cleans up the flow of data)
 
