@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>spark-kotlin</groupId>
-    <artifactId>spark-kotlin</artifactId>
+    <groupId>com.ibm.mdm.delivery.mps</groupId>
+    <artifactId>MDMPropertyService</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>spark-kotlin spark-kotlin</name>
+    <name>com.ibm.mdm.delivery.mps MDMPropertyService</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.0.6</kotlin.version>
+        <kotlin.version>1.1.2-4</kotlin.version>
         <junit.version>4.12</junit.version>
     </properties>
 
@@ -35,10 +34,10 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+                <dependency>
             <groupId>com.sparkjava</groupId>
-            <artifactId>spark-core</artifactId>
-            <version>2.5.4</version>
+            <artifactId>spark-kotlin</artifactId>
+            <version>1.0.0-alpha</version>
         </dependency>
         <dependency>
             <groupId>com.sparkjava</groupId>
@@ -106,7 +105,6 @@
                 </executions>
             </plugin>
         </plugins>
-
     </build>
 
 </project>

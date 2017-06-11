@@ -1,4 +1,4 @@
-package app.user
+package com.ibm.mdm.delivery.mps.user
 
 import java.util.concurrent.atomic.AtomicInteger
 

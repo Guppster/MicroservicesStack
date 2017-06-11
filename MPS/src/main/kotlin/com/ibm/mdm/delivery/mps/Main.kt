@@ -1,6 +1,6 @@
-package app
+package com.ibm.mdm.delivery.mps
 
-import app.user.UserDao
+import com.ibm.mdm.delivery.mps.user.UserDao
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import spark.Request
 import spark.Spark.*
