@@ -1,54 +1,59 @@
 package com.ibm.mdm.delivery.mps
 
-import com.ibm.mdm.delivery.mps.user.UserDao
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ibm.mdm.delivery.mps.property.PropertyController
 import spark.Request
 import spark.Spark.*
 
-fun main(args: Array<String>) {
-
+fun main(args: Array<String>)
+{
     exception(Exception::class.java) { e, req, res -> e.printStackTrace() }
 
-    val userDao = UserDao()
+    val propertyController = PropertyController()
 
-    path("/users") {
-
-        get("") { req, res ->
-            jacksonObjectMapper().writeValueAsString(userDao.users)
+    path("/properties")
+    {
+        get("")
+        { req, res ->
+            jacksonObjectMapper().writeValueAsString(propertyController.properties)
         }
 
-        get("/:id") { req, res ->
-            userDao.findById(req.params("id").toInt())
+        get("/:id")
+        { req, res ->
+            propertyController.findById(req.params("id").toInt())
         }
 
-        get("/email/:email") { req, res ->
-            userDao.findByEmail(req.params("email"))
+        get("/name/:name")
+        { req, res ->
+            propertyController.findByName(req.params("name"))
         }
 
-        post("/create") { req, res ->
-            userDao.save(name = req.qp("name"), email = req.qp("email"))
+        post("/save")
+        { req, res ->
+            propertyController.save(name = req.qp("name"), property = req.qp("property"))
             res.status(201)
-            "ok"
+            "OK"
         }
 
-        patch("/update/:id") { req, res ->
-            userDao.update(
+        patch("/update/:id")
+        { req, res ->
+            propertyController.update(
                     id = req.params("id").toInt(),
                     name = req.qp("name"),
-                    email = req.qp("email")
+                    property = req.qp("property")
             )
-            "ok"
+            "OK"
         }
 
-        delete("/delete/:id") { req, res ->
-            userDao.delete(req.params("id").toInt())
-            "ok"
+        delete("/delete/:id")
+        { req, res ->
+            propertyController.delete(req.params("id").toInt())
+            "OK"
         }
 
     }
 
-    userDao.users.forEach(::println)
-
+    propertyController.properties.forEach(::println)
 }
 
 fun Request.qp(key: String): String = this.queryParams(key) //adds .qp alias for .queryParams on Request object
