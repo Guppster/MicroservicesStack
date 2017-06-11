@@ -1,5 +1,8 @@
 package com.ibm.mdm.delivery.mps.property
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import java.util.concurrent.atomic.AtomicInteger
 
 class PropertyController
@@ -15,6 +18,7 @@ class PropertyController
     fun save(name: String, property: String)
     {
         val id = lastId.incrementAndGet()
+
         properties.put(id, PropertyMapping(name = name, property = property, id = id))
     }
 

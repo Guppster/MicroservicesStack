@@ -1,5 +1,8 @@
 package com.ibm.mdm.delivery.mps
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ibm.mdm.delivery.mps.property.PropertyController
 import spark.Request
@@ -9,13 +12,20 @@ fun main(args: Array<String>)
 {
     exception(Exception::class.java) { e, req, res -> e.printStackTrace() }
 
+    //Create an interface to manipulate properties
     val propertyController = PropertyController()
+
+    //Enable YAML parsing
+    val mapper = ObjectMapper(YAMLFactory())
+
+    //Enable Kotlin support
+    mapper.registerModule(KotlinModule())
 
     path("/properties")
     {
         get("")
         { req, res ->
-            jacksonObjectMapper().writeValueAsString(propertyController.properties)
+            mapper.writeValueAsString(propertyController.properties)
         }
 
         get("/:id")
