@@ -3,7 +3,6 @@ package com.ibm.mdm.delivery.mps
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ibm.mdm.delivery.mps.property.PropertyController
 import spark.Request
 import spark.Spark.*
@@ -30,12 +29,12 @@ fun main(args: Array<String>)
 
         get("/:id")
         { req, res ->
-            propertyController.findById(req.params("id").toInt())
+            mapper.writeValueAsString(propertyController.findById(req.params("id").toInt()))
         }
 
         get("/name/:name")
         { req, res ->
-            propertyController.findByName(req.params("name"))
+            mapper.writeValueAsString(propertyController.findByName(req.params("name")))
         }
 
         post("/save")
