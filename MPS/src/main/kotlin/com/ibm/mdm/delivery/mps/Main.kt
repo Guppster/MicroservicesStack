@@ -15,7 +15,7 @@ fun main(args: Array<String>)
     //Create an interface to manipulate properties
     val propertyController = PropertyController()
 
-    var entryController = EntryController()
+    var entryController = EntryController(propertyController)
 
     //Enable YAML parsing
     val mapper = ObjectMapper(YAMLFactory())
@@ -35,7 +35,7 @@ fun main(args: Array<String>)
             mapper.writeValueAsString(propertyController.findById(req.params("id").toInt()))
         }
 
-        get("/:id/:key/")
+        get("/:id/:key")
         { req, res ->
             mapper.writeValueAsString(
                     entryController.get(
@@ -54,7 +54,7 @@ fun main(args: Array<String>)
         { req, res ->
             mapper.writeValueAsString(
                     entryController.get(
-                            name = req.params("id"),
+                            name = req.params("name"),
                             key = req.params("key")
                     )
             )
