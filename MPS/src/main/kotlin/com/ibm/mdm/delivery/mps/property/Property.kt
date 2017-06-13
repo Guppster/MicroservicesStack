@@ -1,3 +1,4 @@
 package com.ibm.mdm.delivery.mps.property
 
-data class PropertyMapping(val name: String, val property: String, val id: Int);
+data class PropertyMapping(val name: String, val property: Map<String, String>, val id: Int);
+

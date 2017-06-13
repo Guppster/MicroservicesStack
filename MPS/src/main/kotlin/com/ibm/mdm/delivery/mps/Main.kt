@@ -37,9 +37,9 @@ fun main(args: Array<String>)
             mapper.writeValueAsString(propertyController.findByName(req.params("name")))
         }
 
-        post("/save")
+        post("/new")
         { req, res ->
-            propertyController.save(name = req.qp("name"), property = req.qp("property"))
+            propertyController.new(name = req.qp("name"), property = req.qp("property"))
             res.status(201)
             "OK"
         }
@@ -54,12 +54,21 @@ fun main(args: Array<String>)
             "OK"
         }
 
+        patch("/update/:name")
+        { req, res ->
+            propertyController.update(
+                    name = req.params("name"),
+                    id = req.qp("id").toInt(),
+                    property = req.qp("property")
+            )
+            "OK"
+        }
+
         delete("/delete/:id")
         { req, res ->
             propertyController.delete(req.params("id").toInt())
             "OK"
         }
-
     }
 
     propertyController.properties.forEach(::println)
