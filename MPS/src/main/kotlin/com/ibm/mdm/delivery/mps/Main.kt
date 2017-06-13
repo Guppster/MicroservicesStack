@@ -3,6 +3,7 @@ package com.ibm.mdm.delivery.mps
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.ibm.mdm.delivery.mps.property.EntryController
 import com.ibm.mdm.delivery.mps.property.PropertyController
 import spark.Request
 import spark.Spark.*
@@ -13,6 +14,8 @@ fun main(args: Array<String>)
 
     //Create an interface to manipulate properties
     val propertyController = PropertyController()
+
+    var entryController = EntryController()
 
     //Enable YAML parsing
     val mapper = ObjectMapper(YAMLFactory())
@@ -32,9 +35,29 @@ fun main(args: Array<String>)
             mapper.writeValueAsString(propertyController.findById(req.params("id").toInt()))
         }
 
+        get("/:id/:key/")
+        { req, res ->
+            mapper.writeValueAsString(
+                    entryController.get(
+                    id = req.params("id").toInt(),
+                    key = req.params("key")
+                    )
+            )
+        }
+
         get("/name/:name")
         { req, res ->
             mapper.writeValueAsString(propertyController.findByName(req.params("name")))
+        }
+
+        get("/name/:name/:key")
+        { req, res ->
+            mapper.writeValueAsString(
+                    entryController.get(
+                            name = req.params("id"),
+                            key = req.params("key")
+                    )
+            )
         }
 
         post("/new")
