@@ -14,31 +14,55 @@ import
 
 )
 
-//StringService provides operations on strings
-type StringService interface
+//Main function
+func main()
 {
-    Uppercase(string) (string, error)
-    Count(string) int
+    service := stringService{}
+
+    uppercaseHandler := httptransport.NewServer(
+        makeUppercaseEndpoint(service),
+        decodeUppercaseRequest,
+        encodeResponse,
+    )
+
+    countHandler := httptransport.NewServer(
+        makeCountEndpoint(service),
+        decodeCountRequest,
+        encodeResponse,
+    )
+
+    http.Handle("/uppercase", uppercaseHandler)
+    http.Handle("/count", countHandler)
+    log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-type stringService struct{}
-
-//This is an implementation for stringService. Takes in a String, returns a tuple?
-func (stringService) Uppercase(input String) (string, error)
+func decodeUppercaseRequest(context context.Context, req *http.Request) (interface{}, error)
 {
-    //Another language that does string comparisons with ==.
-    if input == ""
+    var request uppercaseRequest
+
+    if err := json.NewDecoder(req.Body).Decode(&request); err != nil
     {
-        return "", ErrEmpty
+        return nil, err
     }
 
-    return strings.ToUpper(s), nil
+    return request, nil
 }
 
-//Another implementation for stringService. Returns int
-func (stringService) Count(input String) int
+func decodeCountRequest(context context.Context, req *http.Request) (interface{}. error)
 {
-    return len(input)
+    var request countRequest
+
+    if err := json.NewDecoder(req.Body).Decode(&request); err != nil
+    {
+        return nil, err
+    }
+
+    return request, nil
+}
+
+func encodeResponse(context context.Context, writer http.ResponseWriter, response interface{}) error
+{
+    return json.NewEncoder(writer).Encode(response)
 }
 
 //Returns an endpoint for converting to uppercase
@@ -67,6 +91,32 @@ func makeCountEndpoint(service StringService) endpoint.Endpoint
     }
 }
 
+//StringService provides operations on strings
+type StringService interface
+{
+    Uppercase(string) (string, error)
+    Count(string) int
+}
+
+type stringService struct{}
+
+//This is an implementation for stringService. Takes in a String, returns a tuple?
+func (stringService) Uppercase(input String) (string, error)
+{
+    //Another language that does string comparisons with ==.
+    if input == ""
+    {
+        return "", ErrEmpty
+    }
+
+    return strings.ToUpper(s), nil
+}
+
+//Another implementation for stringService. Returns int
+func (stringService) Count(input String) int
+{
+    return len(input)
+}
 //We need request and response structs for each call. Not sure why... yet
 type uppercaseRequest struct
 {
