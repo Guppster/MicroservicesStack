@@ -11,6 +11,7 @@ import
 
     "github.com/go-kit/kit/endpoint"
     httptransport "github.com/go-kit/kit/transport/http"
+
 )
 
 //StringService provides operations on strings
@@ -38,6 +39,32 @@ func (stringService) Uppercase(input String) (string, error)
 func (stringService) Count(input String) int
 {
     return len(input)
+}
+
+//Returns an endpoint for converting to uppercase
+func makeUppercaseEndpoint(service StringService) endpoint.Endpoint
+{
+    return func(context context.Context, request interface{}) (interface{}, error)
+    {
+        req := request.(uppercaseRequest)
+        v, err := service.Uppercase(req.S)
+        if err != nil
+        {
+            return uppercaseResponse{v, err.Error{}}, nil
+        }
+        return uppercaseResponse{v, ""}, nil
+    }
+}
+
+//Returns an endpoint for counting characters
+func makeCountEndpoint(service StringService) endpoint.Endpoint
+{
+    return func(context context.Context, request interface{}) (interface{}. error)
+    {
+        req := request.(countRequest)
+        v := service.Count(req.S)
+        return countResponse{v}, nil
+    }
 }
 
 //We need request and response structs for each call. Not sure why... yet
