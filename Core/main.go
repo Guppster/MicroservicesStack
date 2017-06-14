@@ -15,16 +15,25 @@ import
 
 //Main function
 func main() {
+    logger := log.NewLogfmtLogger(os.Stderr)
     service := stringService{}
 
+    var uppercase endpoint.Endpoint
+    uppercase = makeUppercaseEndpoint(service)
+    uppercase = loggingMiddleware(log.NewContext(logger).With("method", "uppercase"))(uppercase)
+
+    var count endpoint.Endpoint
+    count = makeCountEndpoint(service)
+    count = loggingMiddleware(log.NewContext(logger).With("method", "count"))(count)
+
     uppercaseHandler := httptransport.NewServer(
-        makeUppercaseEndpoint(service),
+        uppercase,
         decodeUppercaseRequest,
         encodeResponse,
     )
 
     countHandler := httptransport.NewServer(
-        makeCountEndpoint(service),
+        count,
         decodeCountRequest,
         encodeResponse,
     )
@@ -32,6 +41,16 @@ func main() {
     http.Handle("/uppercase", uppercaseHandler)
     http.Handle("/count", countHandler)
     log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func loggingMiddleware(logger log.Logger) Middleware {
+    return func(next endpoint.Endpoint) endpoint.Endpoint {
+        return func(context context.Context, request interface{}) (interface{}, error) {
+            logger.Log("msg", "calling endpoint")
+            defer logger.Log("msg", "called endpoint")
+            return next(context, request)
+        }
+    }
 }
 
 func decodeUppercaseRequest(context context.Context, req *http.Request) (interface{}, error){
