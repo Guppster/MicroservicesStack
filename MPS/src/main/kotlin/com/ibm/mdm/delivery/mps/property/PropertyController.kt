@@ -37,6 +37,12 @@ class PropertyController
         properties.put(id, PropertyMapping(name = name, property = jsonToPropertyMap(property), id = id))
     }
 
+    fun update(name: String, property: String)
+    {
+        val id = findByName(name)!!.id
+        properties.put(id , PropertyMapping(name = name, property = jsonToPropertyMap(property), id = id))
+    }
+
     fun delete(id: Int) {
         properties.remove(id)
     }

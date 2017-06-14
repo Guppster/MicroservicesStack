@@ -1,5 +1,6 @@
 package com.ibm.mdm.delivery.mps
 
+import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -18,7 +19,7 @@ fun main(args: Array<String>)
     var entryController = EntryController(propertyController)
 
     //Enable YAML parsing
-    val mapper = ObjectMapper(YAMLFactory())
+    val mapper = ObjectMapper(JsonFactory())
 
     //Enable Kotlin support
     mapper.registerModule(KotlinModule())
@@ -30,24 +31,60 @@ fun main(args: Array<String>)
             mapper.writeValueAsString(propertyController.properties)
         }
 
-        get("/:id")
+        get("/id/:id")
         { req, res ->
             mapper.writeValueAsString(propertyController.findById(req.params("id").toInt()))
         }
 
-        get("/:id/:key")
-        { req, res ->
-            mapper.writeValueAsString(
-                    entryController.get(
-                    id = req.params("id").toInt(),
-                    key = req.params("key")
-                    )
-            )
-        }
 
         get("/name/:name")
         { req, res ->
             mapper.writeValueAsString(propertyController.findByName(req.params("name")))
+        }
+
+        post("/new")
+        { req, res ->
+            propertyController.new(name = req.qp("name"), property = req.qp("property"))
+            res.status(201)
+            "OK"
+        }
+
+        patch("/update/id/:id")
+        { req, res ->
+            propertyController.update(
+                    id = req.params("id").toInt(),
+                    name = req.qp("name"),
+                    property = req.qp("property")
+            )
+            "OK"
+        }
+
+        patch("/update/name/:name")
+        { req, res ->
+            propertyController.update(
+                    name = req.params("name"),
+                    property = req.qp("property")
+            )
+            "OK"
+        }
+
+        delete("/delete/:id")
+        { req, res ->
+            propertyController.delete(req.params("id").toInt())
+            "OK"
+        }
+    }
+
+    path("/entry")
+    {
+        get("/id/:id/:key")
+        { req, res ->
+            mapper.writeValueAsString(
+                    entryController.get(
+                            id = req.params("id").toInt(),
+                            key = req.params("key")
+                    )
+            )
         }
 
         get("/name/:name/:key")
@@ -60,38 +97,6 @@ fun main(args: Array<String>)
             )
         }
 
-        post("/new")
-        { req, res ->
-            propertyController.new(name = req.qp("name"), property = req.qp("property"))
-            res.status(201)
-            "OK"
-        }
-
-        patch("/update/:id")
-        { req, res ->
-            propertyController.update(
-                    id = req.params("id").toInt(),
-                    name = req.qp("name"),
-                    property = req.qp("property")
-            )
-            "OK"
-        }
-
-        patch("/update/:name")
-        { req, res ->
-            propertyController.update(
-                    name = req.params("name"),
-                    id = req.qp("id").toInt(),
-                    property = req.qp("property")
-            )
-            "OK"
-        }
-
-        delete("/delete/:id")
-        { req, res ->
-            propertyController.delete(req.params("id").toInt())
-            "OK"
-        }
     }
 
     propertyController.properties.forEach(::println)
