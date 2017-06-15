@@ -35,25 +35,26 @@ func main() {
 		Help:      "The result of each count method.",
 	}, []string{}) // no fields here
 
-	var svc StringService
-	svc = stringService{}
-	svc = loggingMiddleware{logger, svc}
-	svc = instrumentingMiddleware{requestCount, requestLatency, countResult, svc}
+	var service CoreService
 
-	uppercaseHandler := httptransport.NewServer(
-		makeUppercaseEndpoint(svc),
-		decodeUppercaseRequest,
+	service = coreService{}
+	service = loggingMiddleware{logger, service}
+	service = instrumentingMiddleware{requestCount, requestLatency, countResult, service}
+
+	propertyMapHandler := httptransport.NewServer(
+		makePropertyMapEndpoint(service),
+		decodePropertyRequest,
 		encodeResponse,
 	)
 
-	countHandler := httptransport.NewServer(
-		makeCountEndpoint(svc),
-		decodeCountRequest,
+	runHandler := httptransport.NewServer(
+		makeRunEndpoint(service),
+		decodeRunRequest,
 		encodeResponse,
 	)
 
-	http.Handle("/uppercase", uppercaseHandler)
-	http.Handle("/count", countHandler)
+	http.Handle("/getPropertyMap", propertyMapHandler)
+	http.Handle("/run", runHandler)
 	http.Handle("/metrics", promhttp.Handler())
 	logger.Log("msg", "HTTP", "addr", ":8080")
 	logger.Log("err", http.ListenAndServe(":8080", nil))

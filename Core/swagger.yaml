@@ -1,0 +1,110 @@
+swagger: '2.0'
+info:
+  description: Central control point for all MDM tooling
+  version: 1.0.0
+  title: MDM-Core
+  # put the contact info for your development or API team
+  contact:
+    email: gsingh@ca.ibm.com
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+# tags are used for organizing operations
+tags:
+- name: Core
+  description: Manage the flow of operation for all MDM tooling
+
+paths:
+  /getPropertyMap:
+    post:
+      tags:
+      - Core
+      summary: Returns the property map of a specific tool
+      operationId: getPropertyMap
+      description: Allows for dynamic retrival of properties required by each tool. By specifying a tool in this POST request, you will get back a map of all properties that tool requires to run. 
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: name
+        description: The name of the tool you want to retrieve properties for
+        required: true
+        schema:
+          $ref: '#/definitions/Service'
+      responses:
+        201:
+          description: property returned
+          schema:
+            $ref: '#/definitions/PropertyMap'
+        400:
+          description: invalid input, object invalid
+        409:
+          description: failed to fetch property
+          
+  /run:
+    post:
+      tags:
+      - Core
+      summary: Runs the specified tool with the provided properties
+      operationId: run
+      description: Sends the provided properties map to the specified tool and returns the results
+      consumes: 
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: name
+        description: The name of the tool you wish to run
+        required: true
+        schema:
+          $ref: '#/definitions/Tool'
+      responses:
+        201:
+          description: Run successful
+          schema:
+            $ref: '#/definitions/Results'
+        400:
+          description: invalid input, object invalid
+        409:
+          description: failed to run properly
+    
+
+definitions:
+  Service:
+    type: object
+    required:
+    - name
+    properties:
+      name:
+        type: string
+        example: PTEF
+  Tool:
+    type: object
+    required:
+    - name
+    properties:
+      name:
+        type: string
+        example: PTEF
+      propertyMap:
+        $ref: '#/definitions/PropertyMap'
+  PropertyMap:
+    type: object
+    additionalProperties:
+      type: string
+      example: PropertyValue
+  Results:
+    type: object
+    additionalProperties:
+      type: string
+    
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /Guppster/Core/1.0.0
+schemes:
+ - https

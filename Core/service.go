@@ -5,23 +5,23 @@ import (
 	"strings"
 )
 
-// StringService provides operations on strings.
-type StringService interface {
-	Uppercase(string) (string, error)
-	Count(string) int
+// CoreService provides operations on MDMServices
+type CoreService interface {
+	GetPropertyMap(string) (string, error)
+	Run(string) int
 }
 
-type stringService struct{}
+type coreService struct{}
 
-func (stringService) Uppercase(s string) (string, error) {
-	if s == "" {
+func (coreService) GetPropertyMap(input string) (string, error) {
+	if input == "" {
 		return "", ErrEmpty
 	}
-	return strings.ToUpper(s), nil
+	return strings.ToUpper(input), nil
 }
 
-func (stringService) Count(s string) int {
-	return len(s)
+func (coreService) Run(input string) int {
+	return len(input)
 }
 
 // ErrEmpty is returned when an input string is empty.
