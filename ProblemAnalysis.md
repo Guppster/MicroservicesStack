@@ -22,8 +22,10 @@
 ## The Solution
 ### Microservices
 
-* Everything is a microservice
+* Everything is a microservice 
   * Tools handle one specific task, very efficently
+
+* Tools are developed and run out of a Docker container
 
 * Tools are setup on central machines and run through an interface (web/anything)
   * This means one time setup and maintainence, no more setup issues
