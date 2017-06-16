@@ -1,8 +1,5 @@
+---
 applications:
-- path: .
+- name: MDM-WebUI
+  random-route: true
   memory: 256M
-  instances: 1
-  domain: w3ibm.mybluemix.net
-  name: MDM-WebUI
-  host: MDM-WebUI
-  disk_quota: 1024M
