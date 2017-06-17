@@ -4,31 +4,31 @@ import java.lang.Thread.sleep
 
 class runController
 {
-    var secondsToWaitMonitored = 0
-    fun executeRun(secondsToWait: Int)
-    {
-        this.secondsToWaitMonitored = secondsToWait
+    var running = false;
 
+    suspend fun executeRun(secondsToWait: Int)
+    {
         println("Started!")
         println("Waiting $secondsToWait seconds...")
 
-        while(secondsToWaitMonitored != 0)
+        running = true
+
+        for (n in 0 until secondsToWait)
         {
             sleep(1000)
-            secondsToWaitMonitored -= 1
             println("One second elapsed!")
         }
+
+        running = false
     }
 
     fun getStatus(): String
     {
-        if (secondsToWaitMonitored > 0)
+        if (running)
         {
             return "Working"
         }
-        else
-        {
-            return "Ready"
-        }
+
+        return "Ready"
     }
 }

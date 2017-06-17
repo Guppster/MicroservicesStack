@@ -20,7 +20,6 @@ fun main(args: Array<String>)
 
     val propertyList = listOf<String>("secondsToWait")
 
-    val parser: Parser = Parser()
 
     post(COREURL + "/services/register", data = JSONObject(mapOf("Name" to TOOLNAME, "Version" to VERSION, "Url" to URL, "Properties" to propertyList)))
 
@@ -30,27 +29,39 @@ fun main(args: Array<String>)
     {
         post("/run", "application/json")
         { req, res ->
+            val runID = getRunID(req.body())
             val body = req.body()
-            val json: JsonObject = parser.parse(StringBuilder(body)) as JsonObject
 
             val secondsToWait = 15;
 
             //secondsToWait = get(COREURL + "entry/" + req.qp("id") + "platform", data = json.get("id"))
 
+            //Run the main program in the background
             async(CommonPool)
             {
                 runController.executeRun(secondsToWait)
             }
 
-            "Run Started for ID: " + json.get("id")
+            "Run Started for ID: " + runID
         }
 
         get("/status")
         { req, res ->
-            JSONObject(mapOf("Status" to runController.getStatus()))
+                JSONObject(mapOf("Status" to runController.getStatus()))
         }
     }
 }
 
+fun getRunID(body: String): String
+{
+    val parser: Parser = Parser()
+    val json: JsonObject = parser.parse(StringBuilder(body)) as JsonObject
+    return json.get("id") as String
+}
+
+fun loadProperties()
+{
+
+}
 
 fun Request.qp(key: String): String = this.queryParams(key) //adds .qp alias for .queryParams on Request object
