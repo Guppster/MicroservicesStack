@@ -2,6 +2,8 @@ package com.ibm.mdm.delivery.tool
 
 import khttp.post
 import com.beust.klaxon.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.async
 import org.json.JSONObject
 import spark.Request
 import spark.Spark.*
@@ -16,7 +18,7 @@ fun main(args: Array<String>)
     val VERSION = "0.0.1"
     val URL = "myurlisthis.com"
 
-    val propertyList = listOf<String>("washost", "wasport", "mdmversion", "dbhost", "dbport", "platform")
+    val propertyList = listOf<String>("secondsToWait")
 
     val parser: Parser = Parser()
 
@@ -31,17 +33,22 @@ fun main(args: Array<String>)
             val body = req.body()
             val json: JsonObject = parser.parse(StringBuilder(body)) as JsonObject
 
-            //val response = get(COREURL + "entry/" + req.qp("id") + "platform", data = json.get("id"))
-            //runController.executeRun()
+            val secondsToWait = 15;
+
+            //secondsToWait = get(COREURL + "entry/" + req.qp("id") + "platform", data = json.get("id"))
+
+            async(CommonPool)
+            {
+                runController.executeRun(secondsToWait)
+            }
 
             "Run Started for ID: " + json.get("id")
         }
 
         get("/status")
         { req, res ->
-            "Ready"
+            JSONObject(mapOf("Status" to runController.getStatus()))
         }
-
     }
 }
 
