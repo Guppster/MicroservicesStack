@@ -2,24 +2,24 @@ package com.ibm.mdm.delivery.tool
 
 import khttp.post
 import com.beust.klaxon.*
+import khttp.get
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
 import org.json.JSONObject
 import spark.Request
+import spark.Response
 import spark.Spark.*
+
+//Run time variables
+val COREURL = "http://hotellnx114.torolab.ibm.com:8080"
+val TOOLNAME = "DeliveryTool"
+val VERSION = "0.0.1"
+val URL = "myurlisthis.com"
+val propertyList = listOf<String>("secondsToWait")
 
 fun main(args: Array<String>)
 {
     exception(Exception::class.java) { e, req, res -> e.printStackTrace() }
-
-    //Run time variables
-    val COREURL = "http://hotellnx114.torolab.ibm.com:8080"
-    val TOOLNAME = "DeliveryTool"
-    val VERSION = "0.0.1"
-    val URL = "myurlisthis.com"
-
-    val propertyList = listOf<String>("secondsToWait")
-
 
     post(COREURL + "/services/register", data = JSONObject(mapOf("Name" to TOOLNAME, "Version" to VERSION, "Url" to URL, "Properties" to propertyList)))
 
@@ -30,16 +30,15 @@ fun main(args: Array<String>)
         post("/run", "application/json")
         { req, res ->
             val runID = getRunID(req.body())
-            val body = req.body()
 
-            val secondsToWait = 15;
+            val properties = loadProperties(runID)
 
-            //secondsToWait = get(COREURL + "entry/" + req.qp("id") + "platform", data = json.get("id"))
+            print(properties)
 
             //Run the main program in the background
             async(CommonPool)
             {
-                runController.executeRun(secondsToWait)
+                runController.executeRun(properties.get("secondsToWait") as Int)
             }
 
             "Run Started for ID: " + runID
@@ -47,7 +46,7 @@ fun main(args: Array<String>)
 
         get("/status")
         { req, res ->
-                JSONObject(mapOf("Status" to runController.getStatus()))
+            JSONObject(mapOf("Status" to runController.getStatus()))
         }
     }
 }
@@ -59,9 +58,9 @@ fun getRunID(body: String): String
     return json.get("id") as String
 }
 
-fun loadProperties()
+fun loadProperties(id: String): JSONObject
 {
-
+    return get(COREURL + "/fetch/$id/secondsToWait", data = id).jsonObject
 }
 
 fun Request.qp(key: String): String = this.queryParams(key) //adds .qp alias for .queryParams on Request object
