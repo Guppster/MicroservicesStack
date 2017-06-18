@@ -114,7 +114,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>app.MainKt</mainClass>
+                                    <mainClass>com.ibm.mdm.delivery.tool.MainKt</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>
