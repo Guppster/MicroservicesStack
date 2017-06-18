@@ -7,18 +7,18 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
 import org.json.JSONObject
 import spark.Request
-import spark.Response
 import spark.Spark.*
 
 //Run time variables
 val COREURL = "http://hotellnx114.torolab.ibm.com:8080"
 val TOOLNAME = "DeliveryTool"
 val VERSION = "0.0.1"
-val URL = "myurlisthis.com"
+val URL = "http://hotellnx114.torolab.ibm.com:59325"
 val propertyList = listOf<String>("secondsToWait")
 
 fun main(args: Array<String>)
 {
+    port(59325)
     exception(Exception::class.java) { e, req, res -> e.printStackTrace() }
 
     post(COREURL + "/services/register", data = JSONObject(mapOf("Name" to TOOLNAME, "Version" to VERSION, "Url" to URL, "Properties" to propertyList)))
@@ -41,6 +41,7 @@ fun main(args: Array<String>)
                 runController.executeRun(properties.get("secondsToWait") as Int)
             }
 
+            res.status(200);
             "Run Started for ID: " + runID
         }
 
@@ -51,16 +52,16 @@ fun main(args: Array<String>)
     }
 }
 
-fun getRunID(body: String): String
+fun getRunID(body: String): Int
 {
     val parser: Parser = Parser()
     val json: JsonObject = parser.parse(StringBuilder(body)) as JsonObject
-    return json.get("id") as String
+    return json.get("Id") as Int
 }
 
-fun loadProperties(id: String): JSONObject
+fun loadProperties(id: Int): JSONObject
 {
-    return get(COREURL + "/fetch/$id/secondsToWait", data = id).jsonObject
+    return get(COREURL + "/fetch/$id").jsonObject
 }
 
 fun Request.qp(key: String): String = this.queryParams(key) //adds .qp alias for .queryParams on Request object
