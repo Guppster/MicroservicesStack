@@ -57,9 +57,10 @@ fun main(args: Array<String>)
                 val result = runController.executeRun(properties.getInt("secondsToWait"))
 
                 //Tell Core that we're done and send results
-                post(COREURL + "/run/finish", data = JSONObject(mapOf("id" to runID, "status" to "Success", "results" to result)))
+                post(COREURL + "/run/finish/$runID", data = JSONObject(mapOf("Status" to "Success", "Data" to result)))
 
-                println(JSONObject(mapOf("id" to runID,  "status" to "Success", "results" to result)))
+                println("Run#$runID finished:")
+                println(JSONObject(mapOf("Status" to "Success", "Data" to result)))
             }
 
             //Send back a OK status with a message indicating run started

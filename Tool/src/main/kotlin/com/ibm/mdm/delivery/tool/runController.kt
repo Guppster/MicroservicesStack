@@ -1,6 +1,5 @@
 package com.ibm.mdm.delivery.tool
 
-import com.beust.klaxon.JSON
 import org.json.JSONObject
 import java.lang.Thread.sleep
 
@@ -10,11 +9,11 @@ class runController
 
     suspend fun executeRun(secondsToWait: Int): JSONObject
     {
-        var output : JSONObject = JSONObject();
+        var output : String = ""
 
-        output.append("log", "Started!")
+        output = output.plus("Started!")
 
-        output.append("log", "Waiting $secondsToWait seconds...")
+        output = output.plus("Waiting $secondsToWait seconds...")
 
         running = true
 
@@ -22,12 +21,12 @@ class runController
         {
             sleep(1000)
 
-            output.append("log", "One second elapsed!")
+            output = output.plus("One second elapsed!")
         }
 
         running = false
 
-        return output
+        return JSONObject(mapOf("Log" to output))
     }
 
     fun getStatus(): String
