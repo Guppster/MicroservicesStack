@@ -13,10 +13,8 @@ class runController
         var output : JSONObject = JSONObject();
 
         output.append("log", "Started!")
-        println("Started!")
 
         output.append("log", "Waiting $secondsToWait seconds...")
-        println("Waiting $secondsToWait seconds...")
 
         running = true
 
@@ -25,12 +23,9 @@ class runController
             sleep(1000)
 
             output.append("log", "One second elapsed!")
-            println("One second elapsed!")
         }
 
         running = false
-
-        output.append("status", "success");
 
         return output
     }

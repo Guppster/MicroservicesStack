@@ -48,16 +48,18 @@ fun main(args: Array<String>)
             val properties = loadProperties(runID)
 
             //Print out the properties to make sure we got them
-            print(properties)
+            println(properties)
 
             //Run the main program and handle results in the background
             async(CommonPool)
             {
                 //Execute and collect results
-                val result = runController.executeRun(properties.get("secondsToWait") as Int)
+                val result = runController.executeRun(properties.getInt("secondsToWait"))
 
                 //Tell Core that we're done and send results
-                post(COREURL + "/run/finish", data = JSONObject(mapOf("id" to runID, "results" to result)))
+                post(COREURL + "/run/finish", data = JSONObject(mapOf("id" to runID, "status" to "Success", "results" to result)))
+
+                println(JSONObject(mapOf("id" to runID,  "status" to "Success", "results" to result)))
             }
 
             //Send back a OK status with a message indicating run started
