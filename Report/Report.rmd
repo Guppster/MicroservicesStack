@@ -100,6 +100,8 @@ _Microservices architecture is an approach to application development in which a
 
     * Each tool will use the /fetch endpoint and send in a run id to retireve the properties it needs
     
+\newpage
+    
 # Functional Requirements
 ```{definition}
 Let an interface be the WebUI or any other user friendly frontend able 
@@ -143,6 +145,5 @@ able to call HTTP methods to a service
 
 * Checks back for the result of the run and displays the report
 
-# Diagrams
 
-
+------------------------
