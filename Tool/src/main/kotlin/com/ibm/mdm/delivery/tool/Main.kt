@@ -14,15 +14,12 @@ import kotlin.system.exitProcess
 //Constants
 val VERSION = "0.0.1"
 val propertyList = listOf<String>("secondsToWait")
-val TOOLNAME = "DeliveryTool"
 
 //Run time variables
+var TOOLNAME = "DeliveryTool"
 var COREURL = "MDMCore.w3ibm.bluemix.com"
 var PORT = 4567
 var URL= "localhost"
-
-// CORE: "http://hotellnx114.torolab.ibm.com:8080"
-// ME:   "http://hotellnx114.torolab.ibm.com:59325"
 
 fun main(args: Array<String>)
 {
@@ -81,7 +78,7 @@ fun main(args: Array<String>)
         post(COREURL + "/services/register", data = JSONObject(mapOf("Name" to TOOLNAME, "Version" to VERSION, "Url" to URL, "Properties" to propertyList)))
     }catch(e: MalformedURLException)
     {
-        println("Error: Invalid core URL or port")
+        println("Error: Invalid core URL or port $COREURL")
         printUsage()
         exitProcess(1)
     }
@@ -92,12 +89,13 @@ fun main(args: Array<String>)
  */
 fun parseArgs(args: Array<String>)
 {
-    if(args.size != 3)
-        printUsage();
+    if(args.size != 4)
+        printUsage()
 
-    COREURL = args[0]
-    URL = args[1]
-    PORT = args[2].toInt()
+    TOOLNAME = args[0]
+    COREURL = args[1]
+    URL = args[2]
+    PORT = args[3].toInt()
 }
 
 /**
@@ -105,8 +103,8 @@ fun parseArgs(args: Array<String>)
  */
 fun printUsage()
 {
-    println("Usage: ... [CORE-URL:CORE-PORT] [SERVICE-URL] [SERVICE-PORT]")
-    println("Example: MDM-Core.w3ibm.bluemix.com localhost 4567")
+    println("Usage: ... [TOOLNAME] [CORE-URL:CORE-PORT] [SERVICE-URL] [SERVICE-PORT]")
+    println("Example: DeliveryTool1 MDM-Core.w3ibm.bluemix.com localhost 4567")
     exitProcess(1)
 }
 
