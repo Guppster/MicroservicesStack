@@ -1,0 +1,263 @@
+% !TeX program = pdfLaTeX
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx,psfrag,epsf}
+\usepackage{enumerate}
+\usepackage{natbib}
+\usepackage{url} % not crucial - just used below for the URL
+
+%\pdfminorversion=4
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{0}
+
+% DON'T change margins - should be 1 inch all around.
+\addtolength{\oddsidemargin}{-.5in}%
+\addtolength{\evensidemargin}{-.5in}%
+\addtolength{\textwidth}{1in}%
+\addtolength{\textheight}{1.3in}%
+\addtolength{\topmargin}{-.8in}%
+
+\begin{document}
+
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\if0\blind
+{
+  \title{\bf MDM Microservices}
+
+  \author{
+        Gurpreet Singh \thanks{The author gratefully acknowledges \ldots{} David Song, Simon Kotwicz,
+and Herman Singh} \\
+    Infosphere MDM Delivery, IBM\\
+      }
+  \maketitle
+} \fi
+
+\if1\blind
+{
+  \bigskip
+  \bigskip
+  \bigskip
+  \begin{center}
+    {\LARGE\bf MDM Microservices}
+  \end{center}
+  \medskip
+} \fi
+
+\bigskip
+\begin{abstract}
+A proposal to migrate existing tools and develop new tools using a
+microservice based architecture. A microservice based approach provides
+solutions to problems regarding property management, user friendliness,
+and many internal development issues. A proof of concept architecture
+implementation is attached and documented to show the potential benefits
+to the team.
+\end{abstract}
+
+\noindent%
+{\it Keywords:} Bluemix, Docker, Golang, Kotlin, Javascript, rMarkdown
+\vfill
+
+\newpage
+\spacingset{1.45} % DON'T change the spacing!
+
+\def\tightlist{}
+
+\section{Problem Analysis}\label{problem-analysis}
+
+\subsection{High Level Goals}\label{high-level-goals}
+
+My interpertation of the contest requirements are summerized into the
+following 3 points
+
+\begin{itemize}
+\item
+  More user friendly tooling
+\item
+  Easier for tools to access common properties
+\item
+  Elegent solution for property management
+\end{itemize}
+
+\subsection{Unrealized Problems}\label{unrealized-problems}
+
+The following is a list of problems I realized throughout the past year
+using the current set of tools.
+
+\begin{itemize}
+\item
+  Tools unable to communicate with each other
+\item
+  Incredibly difficult and complex learning curve to reach 1 successful
+  run of any tool
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Too many tutorials to follow, too many settings to change just to
+    run a simple test
+  \end{itemize}
+\item
+  Language and platform restrictions becoming larger with each new tool
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Restricting possible approaches to a new problem
+  \end{itemize}
+\item
+  High overhead during initial setup phase for every tool
+
+  \begin{itemize}
+  \item
+    Only a few people know how to set everything up
+  \item
+    Leads to too many environment problems that should never occur for a
+    user
+  \end{itemize}
+\item
+  Current programming paterns make it hard to implement test driven
+  development
+\end{itemize}
+
+\section{Solution}\label{solution}
+
+\subsubsection{Microservices}\label{microservices}
+
+\emph{Microservices architecture is an approach to application
+development in which a large application is built as a suite of modular
+services. Each module supports a specific business goal and uses a
+simple, well-defined interface to communicate with other sets of
+services.} \citep{searchMicroservices}
+
+\begin{itemize}
+\item
+  Everything is a microservice
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Tools handle one specific task, very efficently
+  \end{itemize}
+\item
+  Tools are developed and run out of Docker containers
+\item
+  Tools are setup on central machines and run through an interface (web
+  / CLI / anything)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    This means one time setup and maintainence, no more setup issues.
+  \end{itemize}
+\item
+  Inter-tool communication is done through HTTP
+
+  \begin{itemize}
+  \item
+    HTTP is easily accessible from any platform and any programming
+    language
+  \item
+    Using a series of HTTP methods (GET, PUT, POST, DELETE\ldots{})
+    anything can use a tool
+  \end{itemize}
+\item
+  Every tool will have a set of API endpoints that clearly define that
+  tool's usage
+
+  \begin{itemize}
+  \item
+    We could have one tool written in Java, another tool written in
+    Pythong and they could both work together without any modification.
+  \item
+    A clear API will enforce and encourage clear tests
+  \end{itemize}
+\item
+  A set of endpoints will be required for any tool to work with the
+  architecture
+
+  \begin{itemize}
+  \item
+    Each tool will register on bootup with the Core service providing
+    its required property set
+  \item
+    Provides a /status and /run endpoint for UI interactions
+  \item
+    Informs Core when a run has finished
+  \end{itemize}
+\item
+  Property values will be stored on the Core service
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Each tool will use the /fetch endpoint and send in a run id to
+    retireve the properties it needs
+  \end{itemize}
+\end{itemize}
+
+\section{Functional Requirements}\label{functional-requirements}
+
+\begin{verbatim}
+Let an interface be the WebUI or any other user friendly frontend able 
+to call HTTP methods to a service
+
+Let a tool be the Tool or any other delivery tooling that does work and is 
+able to call HTTP methods to a service
+\end{verbatim}
+
+\subsection{Core}\label{core}
+
+\begin{itemize}
+\item
+  Allows new services to register. Stores their properties.
+\item
+  Allows an interface to fetch list of services
+\item
+  Can check the status of any service
+\item
+  Allows an interface to create a new run with any predefined property
+  set
+\item
+  Queues up requests and load balences them between services if there
+  are multiple instances of a tool running
+\item
+  Allows a tool to submit a run result
+\item
+  Allows an interface to fetch a run result
+\end{itemize}
+
+\subsection{A Tool}\label{a-tool}
+
+\begin{itemize}
+\item
+  Registers with the Core at the start of the service and sends it a
+  list of required properties
+\item
+  Able to provide it's status, even in the middle of a run
+\item
+  Fetches new properties from Core for every run
+\item
+  Sends a report to Core after every run
+\end{itemize}
+
+\subsection{WebUI}\label{webui}
+
+\begin{itemize}
+\item
+  Gets a list of services from Core
+\item
+  Creates a run with one of the property maps for one of the services
+  retrieved
+\item
+  Checks back for the result of the run and displays the report
+\end{itemize}
+
+\bibliographystyle{agsm}
+\bibliography{bibliography.bib}
+
+\end{document}
