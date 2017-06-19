@@ -1,7 +1,5 @@
 FROM maven:3-alpine
 
-MAINTAINER XenonStack
-
 # Creating Application Source Code Directory
 RUN mkdir -p /usr/src/app
 
@@ -20,5 +18,5 @@ VOLUME ["/kotlin-data"]
 # Exposing Port
 EXPOSE 4567
 
-# Running Kotlin Application
-CMD ["java", "-jar", "target/MDMTool-1.0-SNAPSHOT-jar-with-dependencies.jar"]`
+ENTRYPOINT java -jar ./target/MDMTool-1.0-SNAPSHOT-jar-with-dependencies.jar 
+
