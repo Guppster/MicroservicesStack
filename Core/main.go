@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/dstratossong/key-value-service/model"
+	"github.ibm.com/gsingh/MDMCore/model"
 	"log"
 	"net/http"
 	"time"
