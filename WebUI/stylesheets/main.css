@@ -1,0 +1,159 @@
+html, body {
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+div.container {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div#service-form {
+  position: absolute;
+  width: 600px;
+  right: -600px;
+  height: 100%;
+  background: white;
+  transition: all 0.7s ease;
+  border-left: 1px solid #333;
+  box-shadow: 10px;
+  top: 0;
+}
+
+div#service-form form {
+  padding: 10px;
+}
+
+div#service-form.active {
+  transform: translateX(-600px);
+}
+
+@media only screen and (max-width: 500px) {
+  div.container {
+    width: 500px;
+  }
+
+  div#service-form {
+    width: 400px;
+    right: -400px;
+  }
+
+  div#service-form.active {
+    transform: translateX(-400px);
+  }
+}
+
+@media only screen and (min-width: 800px) {
+  div.container {
+    width: 800px;
+  }
+}
+
+div.services-container p.services-title {
+  font-size: 24px;
+  font-family: serif;
+}
+
+div.services-container ul.services,
+li.service-container ul.instances {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+}
+
+ul.services li.service-container,
+ul.instances li.instance-container {
+  font-family: sans-serif;
+  list-style: none;
+}
+
+ul.instances li.instance-container {
+  background-color: #c0f8c0;
+}
+
+ul.services li.service-container:hover {
+  background-color: #e8e8e8;
+}
+
+ul.instances li.instance-container:hover {
+  background-color: #b0e8b0;
+}
+
+li.service-container p.service-title,
+li.instance-container p.instance-title {
+  font-size: 20px;
+  position:relative;
+  margin: 0;
+  padding: 10px 0;
+  user-select: none;
+  cursor: pointer;
+}
+
+li.service-container span.service-status,
+li.instance-container span.instance-status {
+  font-size: 18px;
+  position: absolute;
+  right: 0;
+}
+
+div.properties-form p.form-title {
+  text-align: center;
+  font-family: serif;
+  font-size: 24px;
+}
+
+div.properties-form form .form-group {
+  margin: 10px;
+  padding: 15px;
+  background-color: #eee;
+  border-radius: 5px;
+  box-shadow: inset 0 0 10px #bbb;
+  border: 1px solid #bbb;
+}
+
+div.properties-form form .form-group label {
+  font-family: monospace;
+  font-size: 20px;
+  margin: 10px 0;
+  display: block;
+}
+
+div.properties-form form .form-group input {
+  font-family: monospace;
+  font-size: 20px;
+  display: block;
+  width: 100%;
+  border: none;
+  border-bottom: 3px solid #aaa;
+  background: none;
+}
+
+div.properties-form form .form-group input:focus {
+  outline: none;
+  border-bottom: 3px solid #9bd;
+}
+
+div.properties-form form .actions {
+  text-align: center;
+}
+
+div.properties-form form .actions button {
+  display: inline-block;
+  background: none;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #9bd;
+  margin: 10px;
+  font-family: sans-serif;
+  font-size: 20px;
+  transform: all 0.7s ease;
+}
+
+div.properties-form form .actions button:hover {
+  cursor: pointer;
+  background-color: #9bd;
+  color: white;
+}
