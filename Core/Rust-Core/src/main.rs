@@ -1,77 +1,99 @@
-#![deny(warnings)]
-extern crate futures;
-extern crate hyper;
-extern crate pretty_env_logger;
-extern crate rustc_serialize;
+#![feature(plugin)]
+#![plugin(rocket_codegen)]
 
-use futures::future::FutureResult;
+extern crate rocket;
+extern crate serde_json;
+#[macro_use] extern crate rocket_contrib;
+#[macro_use] extern crate serde_derive;
 
-use hyper::{Get, Post, StatusCode};
-use hyper::header::ContentLength;
-use hyper::server::{Http, Service, Request, Response};
-use rustc_serialize::json;
+#[cfg(test)] mod tests;
 
-static INDEX: &'static [u8] = b"Try POST /echo";
+use rocket_contrib::{JSON, Value};
+use rocket::State;
+use std::collections::HashMap;
+use std::sync::Mutex;
 
-#[derive(RustcEncodable, RustcDecodable)]
-struct Greeting
+// The type to represent the ID of a message.
+type ID = usize;
+
+// We're going to store all of the messages here. No need for a DB.
+type MessageMap = Mutex<HashMap<ID, String>>;
+
+#[derive(Serialize, Deserialize)]
+struct Message 
 {
-    msg: String
+    id: Option<ID>,
+    contents: String
 }
 
-struct Core;
-
-impl Service for Core 
+#[post("/<id>", format = "application/json", data = "<message>")]
+fn new(id: ID, message: JSON<Message>, map: State<MessageMap>) -> JSON<Value> 
 {
-    type Request = Request;
-    type Response = Response;
-    type Error = hyper::Error;
-    type Future = FutureResult<Response, hyper::Error>;
-
-    fn call(&self, req: Request) -> Self::Future 
+    let mut hashmap = map.lock().expect("map lock.");
+    if hashmap.contains_key(&id) 
     {
-        futures::future::ok(match (req.method(), req.path()) 
-                            {
-                                (&Get, "/") | (&Get, "/echo") => 
-                                {
-                                    Response::new()
-                                        .with_header(ContentLength(INDEX.len() as u64))
-                                        .with_body(INDEX)
-                                },
-
-                                (&Post, "/echo") => 
-                                {
-                                    let mut res = Response::new();
-
-                                    if let Some(len) = req.headers().get::<ContentLength>() 
-                                    {
-                                        res.headers_mut().set(len.clone());
-                                    }
-
-                                    let payload = req.body.read_to_string();
-                                    let request: Greeting = json::decode(payload).unwrap();
-                                    let greeting = Greeting { msg : request.msg };
-                                    let payload = json::encode(&greeting).unwrap();
-
-                                    res.with_body(payload)
-                                },
-
-                                _ => 
-                                {
-                                    Response::new()
-                                        .with_status(StatusCode::NotFound)
-                                }
-                            })
+        JSON(json!(
+                {
+                    "status": "error",
+                    "reason": "ID exists. Try put."
+                }))
+    } else 
+    {
+        hashmap.insert(id, message.0.contents);
+        JSON(json!({ "status": "ok" }))
     }
 }
 
+#[put("/<id>", format = "application/json", data = "<message>")]
+fn update(id: ID, message: JSON<Message>, map: State<MessageMap>) -> Option<JSON<Value>> 
+{
+    let mut hashmap = map.lock().unwrap();
+
+    if hashmap.contains_key(&id) 
+    {
+        hashmap.insert(id, message.0.contents);
+
+        Some(JSON(json!({ "status": "ok" })))
+    } else 
+    {
+        None
+    }
+}
+
+#[get("/<id>", format = "application/json")]
+fn get(id: ID, map: State<MessageMap>) -> Option<JSON<Message>> 
+{
+    let hashmap = map.lock().unwrap();
+
+    hashmap.get(&id).map(|contents| 
+                         {
+                             JSON(Message 
+                                  {
+                                      id: Some(id),
+                                      contents: contents.clone()
+                                  })
+                         })
+}
+
+#[error(404)]
+fn not_found() -> JSON<Value> 
+{
+    JSON(json!(
+            {
+                "status": "error",
+                "reason": "Resource was not found."
+            }))
+}
+
+fn rocket() -> rocket::Rocket 
+{
+    rocket::ignite()
+        .mount("/message", routes![new, update, get])
+        .catch(errors![not_found])
+        .manage(Mutex::new(HashMap::<ID, String>::new()))
+}
 
 fn main() 
 {
-    pretty_env_logger::init().unwrap();
-    let address = "0.0.0.0:8080".parse().unwrap();
-
-    let server = Http::new().bind(&address, || Ok(Core)).unwrap();
-    println!("Listening on http://{} with 1 thread.", server.local_addr().unwrap());
-    server.run().unwrap();
+    rocket().launch();
 }
