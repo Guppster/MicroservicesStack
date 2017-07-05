@@ -2,14 +2,22 @@
 extern crate futures;
 extern crate hyper;
 extern crate pretty_env_logger;
+extern crate rustc_serialize;
 
 use futures::future::FutureResult;
 
 use hyper::{Get, Post, StatusCode};
 use hyper::header::ContentLength;
 use hyper::server::{Http, Service, Request, Response};
+use rustc_serialize::json;
 
 static INDEX: &'static [u8] = b"Try POST /echo";
+
+#[derive(RustcEncodable, RustcDecodable)]
+struct Greeting
+{
+    msg: String
+}
 
 struct Core;
 
@@ -39,8 +47,13 @@ impl Service for Core
                                     {
                                         res.headers_mut().set(len.clone());
                                     }
-                                    res.with_body(req.body())
 
+                                    let payload = req.body.read_to_string();
+                                    let request: Greeting = json::decode(payload).unwrap();
+                                    let greeting = Greeting { msg : request.msg };
+                                    let payload = json::encode(&greeting).unwrap();
+
+                                    res.with_body(payload)
                                 },
 
                                 _ => 
@@ -56,9 +69,9 @@ impl Service for Core
 fn main() 
 {
     pretty_env_logger::init().unwrap();
-    let addr = "0.0.0.0:1337".parse().unwrap();
+    let address = "0.0.0.0:8080".parse().unwrap();
 
-    let server = Http::new().bind(&addr, || Ok(Core)).unwrap();
+    let server = Http::new().bind(&address, || Ok(Core)).unwrap();
     println!("Listening on http://{} with 1 thread.", server.local_addr().unwrap());
     server.run().unwrap();
 }
